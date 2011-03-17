@@ -1,19 +1,22 @@
 "
-"Vimorator, 2010, Sergey Rezvanov, rezwyi(at)gmail.com
+"Vimorator, 2010-2011, Sergey Rezvanov, rezwyi(at)gmail.com
 "
 if v:version < 700
   finish
 endif
 
+"loaded
 if exists("g:vimorator_loaded") && g:vimorator_loaded
 	finish
 endif
 let g:vimorator_loaded = 1
 
+"tns_admin
 if !exists("g:vimorator_tns_admin") || g:vimorator_tns_admin == ""
   let g:vimorator_tns_admin = $TNS_ADMIN
 endif
 
+"global hotkey
 if !exists("g:vimorator_hotkey") || g:vimorator_hotkey == ""
 	let g:vimorator_hotkey = "<F2>"
 endif
@@ -36,15 +39,20 @@ function s:init()
 
 	cnoremap k k<cr>:call <SID>open()<cr>
 	cnoremap j j<cr>:call <SID>open()<cr>
+  cmap <up> k
+  cmap <down> j
 
   call s:parse_tnsnames()
   call s:set_cmdh(s:sn_list_length + 1)
+  exe "redraw"
 
 endfunc
 
 function s:kill()
 	cunmap k
 	cunmap j
+  cunmap <up>
+  cunmap <down>
 
   exe "hi Cursor guibg=" . 
       \s:cursor_bg . " guifg=".((s:cursor_fg == "") ? "NONE" : s:cursor_fg)
@@ -64,8 +72,6 @@ function s:open()
 		return
 	endif
 
-  call s:set_cmdh(s:sn_list_length + 1)
-
   for l:i in range(s:sn_list_length)
     if l:i != s:current_sn_idx
       echo "  <" . (l:i + 1) . "> " . s:sn_list[l:i]
@@ -76,7 +82,7 @@ function s:open()
 
   let l:pkey = input("Choose service name:", " ")
 
-  "key pressing
+  "key press handling
 	if l:pkey =~ "j$"
 		if s:current_sn_idx == s:sn_list_length - 1
 			let s:current_sn_idx = 0
@@ -114,7 +120,7 @@ function s:open()
 
 	endif
 
-  call s:set_cmdh(s:original_cmdh)
+  call s:set_cmdh(s:sn_list_length + 1)
 
 endfunc
 
